@@ -123,6 +123,7 @@
                         email: '=',
                         amount: '=',
                         reference: '=',
+	                    beforepopupvalue: '=',
                         beforepopup: '=?',
                         callback: '=?',
                         metadata: '=?',
@@ -138,30 +139,31 @@
                         scope.text = attrs.text || "Make Payment";
                         return paystackApi.then((function (_this) {
                             angular.element(element).click(function () {
-                                var beforePopUp = (scope.beforepopup !== 'undefined') ? scope.beforepopup() : true;
-                                var handler = PaystackPop.setup({
-                                    key: options.key,
-                                    email: scope.email,
-                                    amount: scope.amount,
-                                    ref: scope.reference,
-                                    metadata: scope.metadata,
-                                    callback: function (response) {
-                                        scope.callback(response);
-                                    },
-                                    onClose: function () {
-                                        scope.close();
-                                    },
-                                    currency: scope.currency,
-                                    plan: scope.plan,
-                                    quantity: scope.quantity,
-                                    subaccount: scope.subaccount,
-                                    transaction_charge: scope.transaction_charge,
-                                    bearer: scope.bearer
-                                });
-
-                                if (beforePopUp) {
-	                                handler.openIframe();
-                                }
+	                            scope.beforepopup();
+	                            scope.$watch('beforepopupvalue', function (newValue, oldValue, scope) {
+		                            if(newValue){
+			                            var handler = PaystackPop.setup({
+				                            key: options.key,
+				                            email: scope.email,
+				                            amount: scope.amount,
+				                            ref: scope.reference,
+				                            metadata: scope.metadata,
+				                            callback: function (response) {
+					                            scope.callback(response);
+				                            },
+				                            onClose: function () {
+					                            scope.close();
+				                            },
+				                            currency: scope.currency,
+				                            plan: scope.plan,
+				                            quantity: scope.quantity,
+				                            subaccount: scope.subaccount,
+				                            transaction_charge: scope.transaction_charge,
+				                            bearer: scope.bearer
+			                            });
+			                            handler.openIframe();
+		                            }
+	                            });
                             });
                         })(this));
                     }
